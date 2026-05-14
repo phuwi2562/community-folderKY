@@ -1,0 +1,2269 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แฟ้มชุมชน - 7 เครื่องมือสำคัญในการทำงานชุมชน</title>
+<style>
+  :root{
+    --primary:#0f766e; --primary-dark:#115e59; --primary-light:#5eead4;
+    --accent:#f59e0b; --danger:#dc2626; --success:#16a34a;
+    --bg:#f8fafc; --surface:#ffffff; --surface-2:#f1f5f9;
+    --text:#0f172a; --muted:#64748b; --border:#e2e8f0;
+    --radius:12px; --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;font-family:'Sarabun','Noto Sans Thai',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.55}
+  body{min-height:100vh;display:flex;flex-direction:column}
+
+  /* Header */
+  header{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:14px 20px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
+  .header-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:1400px;margin:0 auto;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px;cursor:pointer}
+  .brand-logo{width:40px;height:40px;background:rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px}
+  .brand-title{font-size:18px;font-weight:700;line-height:1.2}
+  .brand-sub{font-size:12px;opacity:.85}
+  .header-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .community-selector{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:6px 12px;border-radius:8px;font-size:14px;cursor:pointer}
+  .community-selector option{color:var(--text)}
+
+  /* Layout */
+  .container{max-width:1400px;margin:0 auto;padding:20px;width:100%;flex:1}
+
+  /* Buttons */
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;font-size:14px;font-family:inherit;transition:.15s;text-decoration:none}
+  .btn:hover{background:var(--surface-2)}
+  .btn-primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .btn-primary:hover{background:var(--primary-dark)}
+  .btn-ghost{background:transparent;border-color:rgba(255,255,255,.3);color:#fff}
+  .btn-ghost:hover{background:rgba(255,255,255,.15)}
+  .btn-danger{background:var(--danger);color:#fff;border-color:var(--danger)}
+  .btn-danger:hover{opacity:.9}
+  .btn-sm{padding:4px 10px;font-size:12px}
+  .btn-icon{padding:6px 8px;line-height:1}
+
+  /* Dashboard cards */
+  .hero{background:var(--surface);padding:24px;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:20px;border-left:4px solid var(--primary)}
+  .hero h1{margin:0 0 8px;font-size:24px}
+  .hero p{margin:0;color:var(--muted)}
+  .tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+  .tool-card{background:var(--surface);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);cursor:pointer;transition:.2s;border:1px solid var(--border);position:relative;overflow:hidden}
+  .tool-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(15,118,110,.12);border-color:var(--primary-light)}
+  .tool-card .num{position:absolute;top:12px;right:14px;font-size:42px;font-weight:800;color:var(--surface-2);line-height:1;z-index:0}
+  .tool-card .icon{font-size:28px;margin-bottom:8px;position:relative;z-index:1}
+  .tool-card h3{margin:0 0 4px;font-size:16px;font-weight:700;position:relative;z-index:1}
+  .tool-card .en{color:var(--muted);font-size:12px;font-style:italic;position:relative;z-index:1}
+  .tool-card .desc{margin-top:8px;font-size:13px;color:var(--muted);position:relative;z-index:1}
+  .tool-card .stat{margin-top:10px;font-size:12px;background:var(--surface-2);padding:4px 8px;border-radius:6px;display:inline-block;color:var(--primary-dark);font-weight:600;position:relative;z-index:1}
+
+  /* Tool views */
+  .tool-view{display:none;background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;animation:fadeIn .25s}
+  .tool-view.active{display:block}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .tool-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+  .tool-header h2{margin:0;font-size:22px;display:flex;align-items:center;gap:10px}
+  .tool-header .desc{color:var(--muted);font-size:14px;margin-top:6px}
+  .tool-toolbar{display:flex;gap:6px;flex-wrap:wrap}
+
+  /* Forms */
+  .form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:12px}
+  .form-group{display:flex;flex-direction:column;gap:4px}
+  label{font-size:13px;font-weight:600;color:var(--text)}
+  input[type=text],input[type=number],input[type=date],input[type=color],select,textarea{padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:14px;background:var(--surface);color:var(--text)}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(15,118,110,.15)}
+  textarea{resize:vertical;min-height:80px}
+  .checkbox-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .check-pill{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border:1px solid var(--border);border-radius:999px;font-size:13px;cursor:pointer;background:var(--surface)}
+  .check-pill input{margin:0}
+  .check-pill.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+  /* Tables / cards */
+  .data-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px}
+  .data-table th,.data-table td{padding:10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+  .data-table th{background:var(--surface-2);font-weight:600;font-size:13px;color:var(--muted)}
+  .data-table tr:hover td{background:#fafafa}
+  .empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
+  .empty-state .icon{font-size:48px;opacity:.4;margin-bottom:10px}
+
+  /* Tabs */
+  .tabs{display:flex;gap:4px;border-bottom:2px solid var(--border);margin-bottom:16px;overflow-x:auto}
+  .tab{padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;font-size:14px;font-weight:600;color:var(--muted);white-space:nowrap;margin-bottom:-2px}
+  .tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+
+  /* Map */
+  #mapCanvas{width:100%;height:520px;background:#f0fdf4;border:1px solid var(--border);border-radius:8px;display:block;touch-action:none;cursor:crosshair}
+  .map-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:12px}
+  .map-legend-item{display:flex;align-items:center;gap:5px}
+  .map-legend-dot{width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
+
+  /* Genogram */
+  #genoCanvas{width:100%;height:520px;background:#fafafa;border:1px solid var(--border);border-radius:8px;display:block}
+
+  /* Calendar */
+  .calendar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px}
+  .month-card{background:var(--surface-2);border-radius:8px;padding:12px;border:1px solid var(--border)}
+  .month-card h4{margin:0 0 8px;font-size:14px;color:var(--primary-dark);display:flex;justify-content:space-between;align-items:center}
+  .month-card .events{font-size:13px;min-height:40px}
+  .event-tag{display:inline-block;background:#fff;border:1px solid var(--border);padding:2px 8px;border-radius:12px;margin:2px;font-size:12px}
+  .event-tag .x{margin-left:4px;color:var(--danger);cursor:pointer}
+
+  /* Timeline */
+  .timeline{position:relative;padding-left:28px;margin-top:16px}
+  .timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:3px;background:var(--primary-light);border-radius:2px}
+  .timeline-item{position:relative;margin-bottom:18px;background:var(--surface-2);padding:12px 14px;border-radius:8px;border:1px solid var(--border)}
+  .timeline-item::before{content:'';position:absolute;left:-26px;top:14px;width:14px;height:14px;background:var(--primary);border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px var(--primary)}
+  .timeline-year{font-weight:700;color:var(--primary-dark);font-size:14px}
+  .timeline-title{font-weight:600;margin:2px 0}
+  .timeline-desc{font-size:13px;color:var(--muted)}
+
+  /* Cards list */
+  .card-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:14px}
+  .item-card{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:14px;position:relative}
+  .item-card h4{margin:0 0 4px;font-size:15px;display:flex;justify-content:space-between;align-items:center;gap:6px}
+  .item-card .badge{display:inline-block;background:var(--primary-light);color:var(--primary-dark);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+  .item-card .meta{font-size:12px;color:var(--muted);margin:4px 0}
+  .item-card .desc{font-size:13px;margin-top:6px;color:#334155}
+  .item-card .actions{position:absolute;top:8px;right:8px;display:flex;gap:4px}
+
+  /* Modal */
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;align-items:center;justify-content:center;padding:20px}
+  .modal-bg.active{display:flex}
+  .modal{background:#fff;border-radius:var(--radius);max-width:600px;width:100%;max-height:90vh;overflow-y:auto;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+  .modal h3{margin-top:0}
+  .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+
+  /* Toast */
+  .toast{position:fixed;bottom:20px;right:20px;background:var(--primary-dark);color:#fff;padding:10px 16px;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.18);transform:translateY(80px);opacity:0;transition:.25s;z-index:300;max-width:320px;font-size:14px}
+  .toast.show{transform:translateY(0);opacity:1}
+
+  /* Sidebar nav (when on tool) */
+  .sidebar-nav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+  .nav-pill{padding:6px 12px;border-radius:999px;border:1px solid var(--border);background:var(--surface);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+  .nav-pill:hover{background:var(--surface-2)}
+  .nav-pill.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+  /* Map controls */
+  .map-controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;align-items:center;padding:10px;background:var(--surface-2);border-radius:8px}
+  .map-controls .group{display:flex;align-items:center;gap:6px;font-size:13px}
+
+  /* Responsive */
+  @media (max-width:640px){
+    .container{padding:12px}
+    .hero{padding:16px}
+    .hero h1{font-size:20px}
+    .tool-view{padding:14px}
+    .brand-title{font-size:15px}
+    .brand-sub{display:none}
+    #mapCanvas{height:400px}
+    #genoCanvas{height:400px}
+  }
+
+  /* Print */
+  @media print{
+    header,.tool-toolbar,.btn,.sidebar-nav,.map-controls{display:none !important}
+    .tool-view{display:block !important;box-shadow:none;page-break-after:always}
+    body{background:#fff}
+  }
+
+  /* Helpers */
+  .pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;background:var(--surface-2);color:var(--muted)}
+  .pill-warning{background:#fef3c7;color:#92400e}
+  .pill-danger{background:#fee2e2;color:#991b1b}
+  .pill-success{background:#dcfce7;color:#166534}
+  .small{font-size:12px;color:var(--muted)}
+  .row-flex{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .divider{height:1px;background:var(--border);margin:12px 0}
+  .stat-block{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:14px}
+  .stat-item{background:var(--surface-2);padding:12px;border-radius:8px;text-align:center}
+  .stat-item .num{font-size:24px;font-weight:700;color:var(--primary)}
+  .stat-item .lab{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand" onclick="showHome()">
+      <div class="brand-logo">📋</div>
+      <div>
+        <div class="brand-title">แฟ้มชุมชน — ตำบลคำใหญ่</div>
+        <div class="brand-sub">อ.ห้วยเม็ก จ.กาฬสินธุ์ · 7 เครื่องมือสำคัญในการทำงานชุมชน</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-ghost btn-sm" onclick="showOverview()">🗂️ ภาพรวมตำบล</button>
+      <select class="community-selector" id="communitySelector" onchange="switchCommunity(this.value)"></select>
+      <button class="btn btn-ghost btn-sm" onclick="openCommunityModal()">➕ ชุมชนใหม่</button>
+      <button class="btn btn-ghost btn-sm" onclick="openSyncModal()" title="ตั้งค่า Google Sheets">
+        <span id="syncStatusIcon">☁️</span> <span id="syncStatusText">Sheets</span>
+      </button>
+      <button class="btn btn-ghost btn-sm" onclick="pullFromSheet()" title="ดึงข้อมูลจาก Sheet">↓ ดึง</button>
+      <button class="btn btn-ghost btn-sm" onclick="exportData()">⬇ ส่งออก</button>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()">⬆ นำเข้า</button>
+      <button class="btn btn-ghost btn-sm" onclick="resetToTambon()" title="โหลด 12 หมู่บ้านตำบลคำใหญ่ใหม่">🔄 รีเซ็ต</button>
+      <input type="file" id="importFile" style="display:none" accept=".json" onchange="importData(event)">
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- Overview / ภาพรวมตำบล -->
+<div id="overviewView" style="display:none">
+  <div class="hero" style="border-left-color:var(--accent)">
+    <h1>🗂️ ภาพรวมตำบลคำใหญ่ อำเภอห้วยเม็ก จังหวัดกาฬสินธุ์</h1>
+    <p>สรุปการบันทึกข้อมูลของแต่ละหมู่บ้านทั้ง 12 หมู่ — คลิกที่การ์ดเพื่อเข้าทำงานในหมู่บ้านนั้น</p>
+    <div class="stat-block" id="overviewStats"></div>
+  </div>
+  <div class="tools-grid" id="overviewGrid"></div>
+</div>
+
+<!-- Dashboard / Home -->
+<div id="homeView">
+  <div class="hero">
+    <h1>📋 <span id="currentCommunityName">เลือกชุมชน</span></h1>
+    <p id="currentCommunityLocation" style="margin-bottom:6px"></p>
+    <p>เครื่องมือเก็บข้อมูลชุมชนเพื่อทำความเข้าใจบริบททางสังคมและวัฒนธรรม โดย นพ.โกมาตร จึงเสถียรทรัพย์ — ออกแบบสำหรับเจ้าหน้าที่ รพ.สต. และ อสม.</p>
+    <div class="stat-block" id="dashboardStats"></div>
+  </div>
+
+  <div class="tools-grid">
+    <div class="tool-card" onclick="showTool('map')">
+      <span class="num">1</span>
+      <div class="icon">🗺️</div>
+      <h3>แผนที่เดินดิน</h3>
+      <div class="en">Geo-social Mapping</div>
+      <div class="desc">แผนที่แสดงมิติทางสังคม ระบุบ้านผู้ป่วยติดเตียง ผู้สูงอายุ ผู้นำทางความคิด ฯลฯ</div>
+      <div class="stat" id="stat-map">0 จุด</div>
+    </div>
+    <div class="tool-card" onclick="showTool('genogram')">
+      <span class="num">2</span>
+      <div class="icon">👨‍👩‍👧‍👦</div>
+      <h3>ผังเครือญาติ</h3>
+      <div class="en">Genogram</div>
+      <div class="desc">แผนผังสายเลือดเพื่อเข้าใจโครงสร้างครอบครัว ผู้ดูแลหลัก และพันธุกรรม</div>
+      <div class="stat" id="stat-geno">0 คน</div>
+    </div>
+    <div class="tool-card" onclick="showTool('org')">
+      <span class="num">3</span>
+      <div class="icon">🏛️</div>
+      <h3>โครงสร้างองค์กรชุมชน</h3>
+      <div class="en">Community Organization</div>
+      <div class="desc">กลุ่มและองค์กรในชุมชนทั้งทางการและไม่ทางการ พร้อมผู้นำและบทบาท</div>
+      <div class="stat" id="stat-org">0 องค์กร</div>
+    </div>
+    <div class="tool-card" onclick="showTool('health')">
+      <span class="num">4</span>
+      <div class="icon">🩺</div>
+      <h3>ระบบสุขภาพชุมชน</h3>
+      <div class="en">Health Systems</div>
+      <div class="desc">เส้นทางการรักษาของชาวบ้าน ตั้งแต่หมอพื้นบ้าน ร้านยา รพ.สต. ถึงโรงพยาบาล</div>
+      <div class="stat" id="stat-health">0 รายการ</div>
+    </div>
+    <div class="tool-card" onclick="showTool('calendar')">
+      <span class="num">5</span>
+      <div class="icon">📅</div>
+      <h3>ปฏิทินชุมชน</h3>
+      <div class="en">Community Calendar</div>
+      <div class="desc">รอบ 1 ปี: ฤดูเก็บเกี่ยว เทศกาล บุญประเพณี เพื่อวางแผนกิจกรรมให้สอดคล้อง</div>
+      <div class="stat" id="stat-cal">0 กิจกรรม</div>
+    </div>
+    <div class="tool-card" onclick="showTool('history')">
+      <span class="num">6</span>
+      <div class="icon">📜</div>
+      <h3>ประวัติศาสตร์ชุมชน</h3>
+      <div class="en">Community History</div>
+      <div class="desc">เหตุการณ์สำคัญและจุดเปลี่ยนของชุมชนในแต่ละยุค</div>
+      <div class="stat" id="stat-history">0 เหตุการณ์</div>
+    </div>
+    <div class="tool-card" onclick="showTool('life')">
+      <span class="num">7</span>
+      <div class="icon">🎙️</div>
+      <h3>ประวัติชีวิต</h3>
+      <div class="en">Life History</div>
+      <div class="desc">บันทึกเรื่องเล่าและประสบการณ์ของบุคคลสำคัญในชุมชน</div>
+      <div class="stat" id="stat-life">0 ประวัติ</div>
+    </div>
+  </div>
+
+  <div class="hero" style="margin-top:20px;border-left-color:var(--accent)">
+    <h1 style="font-size:18px">💡 หัวใจสำคัญ</h1>
+    <p>เครื่องมือเหล่านี้ไม่ได้มีไว้เพื่อ "เก็บข้อมูล" ใส่แฟ้มอย่างเดียว แต่มีไว้เพื่อ "เปิดใจ" และสร้างความสัมพันธ์ที่แน่นแฟ้นระหว่างเจ้าหน้าที่สาธารณสุขกับคนในชุมชน</p>
+  </div>
+</div>
+
+<!-- TOOL 1: แผนที่เดินดิน -->
+<div id="mapView" class="tool-view">
+  <div class="tool-header">
+    <div>
+      <h2>🗺️ 1. แผนที่เดินดิน <span class="pill">Geo-social Mapping</span></h2>
+      <div class="desc">คลิกบนแผนที่เพื่อปักหมุดบ้านหรือสถานที่สำคัญ — แต่ละจุดสามารถระบุคุณลักษณะทางสังคมและสุขภาพได้</div>
+    </div>
+    <div class="tool-toolbar">
+      <button class="btn btn-sm" onclick="showHome()">← กลับ</button>
+      <button class="btn btn-danger btn-sm" onclick="clearMap()">🗑️ ล้าง</button>
+    </div>
+  </div>
+
+  <div class="map-controls">
+    <div class="group">
+      <label>โหมด:</label>
+      <select id="mapMode" onchange="setMapMode(this.value)">
+        <option value="add">เพิ่มจุด</option>
+        <option value="move">ย้ายจุด</option>
+        <option value="delete">ลบจุด</option>
+      </select>
+    </div>
+    <div class="group">
+      <label>ประเภท:</label>
+      <select id="mapPointType">
+        <option value="house">🏠 บ้าน</option>
+        <option value="elderly">👴 บ้านผู้สูงอายุ</option>
+        <option value="bedridden">🛏️ บ้านติดเตียง</option>
+        <option value="leader">⭐ ผู้นำชุมชน</option>
+        <option value="temple">🛕 วัด/ศาสนสถาน</option>
+        <option value="school">🏫 โรงเรียน</option>
+        <option value="health">🏥 รพ.สต./คลินิก</option>
+        <option value="shop">🏪 ร้านค้า</option>
+        <option value="risk">⚠️ จุดเสี่ยง</option>
+        <option value="meeting">☕ จุดรวมตัว</option>
+      </select>
+    </div>
+    <button class="btn btn-sm btn-primary" onclick="resetMapView()">🎯 รีเซ็ตมุมมอง</button>
+    <span class="small" style="margin-left:auto">จุดทั้งหมด: <strong id="mapPointCount">0</strong></span>
+  </div>
+
+  <svg id="mapCanvas" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet"></svg>
+
+  <div class="map-legend">
+    <div class="map-legend-item"><span class="map-legend-dot" style="background:#3b82f6"></span> บ้าน</div>
+    <div class="map-legend-item"><span class="map-legend-dot" style="background:#a855f7"></span> ผู้สูงอายุ</div>
+    <div class="map-legend-item"><span class="map-legend-dot" style="background:#dc2626"></span> ติดเตียง</div>
+    <div class="map-legend-item"><span class="map-legend-dot" style="background:#f59e0b"></span> ผู้นำ</div>
+    <div class="map-legend-item"><span class="map-legend-dot" style="background:#8b5cf6"></span> วัด</div>
+    <div class="map-legend-item"><span class="map-legend-dot" style="background:#0ea5e9"></span> โรงเรียน</div>
+    <div class="map-legend-item"><span class="map-legend-dot" style="background:#16a34a"></span> รพ.สต.</div>
+    <div class="map-legend-item"><span class="map-legend-dot" style="background:#eab308"></span> ร้านค้า</div>
+    <div class="map-legend-item"><span class="map-legend-dot" style="background:#ef4444"></span> จุดเสี่ยง</div>
+    <div class="map-legend-item"><span class="map-legend-dot" style="background:#06b6d4"></span> จุดรวมตัว</div>
+  </div>
+
+  <div class="divider"></div>
+  <h3 style="margin:8px 0">รายการจุดบนแผนที่</h3>
+  <div id="mapPointsList"></div>
+</div>
+
+<!-- TOOL 2: ผังเครือญาติ -->
+<div id="genogramView" class="tool-view">
+  <div class="tool-header">
+    <div>
+      <h2>👨‍👩‍👧‍👦 2. ผังเครือญาติ <span class="pill">Genogram</span></h2>
+      <div class="desc">เพิ่มบุคคลในครอบครัวและกำหนดความสัมพันธ์ เพื่อระบุผู้ดูแลหลักและแนวโน้มทางพันธุกรรม</div>
+    </div>
+    <div class="tool-toolbar">
+      <button class="btn btn-sm" onclick="showHome()">← กลับ</button>
+      <button class="btn btn-primary btn-sm" onclick="openPersonModal()">+ เพิ่มบุคคล</button>
+      <button class="btn btn-danger btn-sm" onclick="clearGenogram()">🗑️ ล้าง</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchGenoTab(event,'chart')">📊 แผนภาพ</div>
+    <div class="tab" onclick="switchGenoTab(event,'list')">📋 รายการ</div>
+  </div>
+
+  <div id="genoChartTab">
+    <svg id="genoCanvas" viewBox="0 0 1000 600"></svg>
+    <div class="small" style="margin-top:8px">
+      สัญลักษณ์: ⬜ ชาย, ⭕ หญิง, ❌ เสียชีวิต, ⭐ ผู้ดูแลหลัก, เส้นคู่ = แต่งงาน, เส้นแนวตั้ง = ลูก
+    </div>
+  </div>
+  <div id="genoListTab" style="display:none">
+    <div id="personList" class="card-list"></div>
+  </div>
+</div>
+
+<!-- TOOL 3: โครงสร้างองค์กร -->
+<div id="orgView" class="tool-view">
+  <div class="tool-header">
+    <div>
+      <h2>🏛️ 3. โครงสร้างองค์กรชุมชน <span class="pill">Community Organization</span></h2>
+      <div class="desc">บันทึกองค์กรและกลุ่มในชุมชน ทั้งทางการ (กำนัน อบต. ผู้ใหญ่บ้าน) และไม่ทางการ (กลุ่มแม่บ้าน วงสภากาแฟ)</div>
+    </div>
+    <div class="tool-toolbar">
+      <button class="btn btn-sm" onclick="showHome()">← กลับ</button>
+      <button class="btn btn-primary btn-sm" onclick="openOrgModal()">+ เพิ่มองค์กร</button>
+    </div>
+  </div>
+
+  <div class="sidebar-nav">
+    <span class="nav-pill active" data-filter="all" onclick="filterOrg('all',event)">ทั้งหมด</span>
+    <span class="nav-pill" data-filter="formal" onclick="filterOrg('formal',event)">ทางการ</span>
+    <span class="nav-pill" data-filter="informal" onclick="filterOrg('informal',event)">ไม่ทางการ</span>
+  </div>
+
+  <div id="orgList" class="card-list"></div>
+</div>
+
+<!-- TOOL 4: ระบบสุขภาพ -->
+<div id="healthView" class="tool-view">
+  <div class="tool-header">
+    <div>
+      <h2>🩺 4. ระบบสุขภาพชุมชน <span class="pill">Health Systems</span></h2>
+      <div class="desc">บันทึกเส้นทางการดูแลรักษา ทั้งระบบสมัยใหม่ ระบบพื้นบ้าน และการดูแลตนเอง</div>
+    </div>
+    <div class="tool-toolbar">
+      <button class="btn btn-sm" onclick="showHome()">← กลับ</button>
+      <button class="btn btn-primary btn-sm" onclick="openHealthModal()">+ เพิ่มผู้ให้บริการ</button>
+    </div>
+  </div>
+
+  <div class="sidebar-nav">
+    <span class="nav-pill active" data-filter="all" onclick="filterHealth('all',event)">ทั้งหมด</span>
+    <span class="nav-pill" data-filter="modern" onclick="filterHealth('modern',event)">การแพทย์สมัยใหม่</span>
+    <span class="nav-pill" data-filter="traditional" onclick="filterHealth('traditional',event)">การแพทย์พื้นบ้าน</span>
+    <span class="nav-pill" data-filter="self" onclick="filterHealth('self',event)">การดูแลตนเอง</span>
+  </div>
+
+  <div id="healthList" class="card-list"></div>
+</div>
+
+<!-- TOOL 5: ปฏิทินชุมชน -->
+<div id="calendarView" class="tool-view">
+  <div class="tool-header">
+    <div>
+      <h2>📅 5. ปฏิทินชุมชน <span class="pill">Community Calendar</span></h2>
+      <div class="desc">บันทึกกิจกรรมและประเพณีในรอบ 1 ปี เพื่อวางแผนงานสุขภาพไม่ขัดจังหวะการทำมาหากิน</div>
+    </div>
+    <div class="tool-toolbar">
+      <button class="btn btn-sm" onclick="showHome()">← กลับ</button>
+    </div>
+  </div>
+
+  <div id="calendarGrid" class="calendar-grid"></div>
+</div>
+
+<!-- TOOL 6: ประวัติศาสตร์ -->
+<div id="historyView" class="tool-view">
+  <div class="tool-header">
+    <div>
+      <h2>📜 6. ประวัติศาสตร์ชุมชน <span class="pill">Community History</span></h2>
+      <div class="desc">เหตุการณ์สำคัญและจุดเปลี่ยนของชุมชน ช่วยเข้าใจรากเหง้าและความภาคภูมิใจ</div>
+    </div>
+    <div class="tool-toolbar">
+      <button class="btn btn-sm" onclick="showHome()">← กลับ</button>
+      <button class="btn btn-primary btn-sm" onclick="openHistoryModal()">+ เพิ่มเหตุการณ์</button>
+    </div>
+  </div>
+
+  <div id="historyTimeline" class="timeline"></div>
+</div>
+
+<!-- TOOL 7: ประวัติชีวิต -->
+<div id="lifeView" class="tool-view">
+  <div class="tool-header">
+    <div>
+      <h2>🎙️ 7. ประวัติชีวิต <span class="pill">Life History</span></h2>
+      <div class="desc">สัมภาษณ์เจาะลึกบุคคลสำคัญในชุมชน บันทึก "วิธีคิด" และ "ประสบการณ์" ของเขา</div>
+    </div>
+    <div class="tool-toolbar">
+      <button class="btn btn-sm" onclick="showHome()">← กลับ</button>
+      <button class="btn btn-primary btn-sm" onclick="openLifeModal()">+ เพิ่มประวัติชีวิต</button>
+    </div>
+  </div>
+
+  <div id="lifeList" class="card-list"></div>
+</div>
+
+</div>
+
+<!-- ============ MODALS ============ -->
+
+<!-- Community modal -->
+<div class="modal-bg" id="communityModal">
+  <div class="modal">
+    <h3>➕ สร้างชุมชนใหม่</h3>
+    <div class="form-group">
+      <label>ชื่อชุมชน *</label>
+      <input type="text" id="cmName" placeholder="เช่น บ้านหนองบัว หมู่ 5">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>ตำบล</label>
+        <input type="text" id="cmTambon">
+      </div>
+      <div class="form-group">
+        <label>อำเภอ</label>
+        <input type="text" id="cmAmphoe">
+      </div>
+      <div class="form-group">
+        <label>จังหวัด</label>
+        <input type="text" id="cmProvince">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>บันทึก/หมายเหตุ</label>
+      <textarea id="cmNote" placeholder="เช่น ลักษณะภูมิประเทศ จำนวนหลังคาเรือน"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('communityModal')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveCommunity()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- Map point modal -->
+<div class="modal-bg" id="mapPointModal">
+  <div class="modal">
+    <h3 id="mapModalTitle">เพิ่มจุดบนแผนที่</h3>
+    <input type="hidden" id="mpId">
+    <input type="hidden" id="mpX">
+    <input type="hidden" id="mpY">
+    <div class="form-row">
+      <div class="form-group">
+        <label>ชื่อจุด/บ้านเลขที่</label>
+        <input type="text" id="mpName" placeholder="เช่น บ้านลุงสมชาย / บ้านเลขที่ 12">
+      </div>
+      <div class="form-group">
+        <label>ประเภท</label>
+        <select id="mpType">
+          <option value="house">🏠 บ้าน</option>
+          <option value="elderly">👴 บ้านผู้สูงอายุ</option>
+          <option value="bedridden">🛏️ บ้านติดเตียง</option>
+          <option value="leader">⭐ ผู้นำชุมชน</option>
+          <option value="temple">🛕 วัด/ศาสนสถาน</option>
+          <option value="school">🏫 โรงเรียน</option>
+          <option value="health">🏥 รพ.สต./คลินิก</option>
+          <option value="shop">🏪 ร้านค้า</option>
+          <option value="risk">⚠️ จุดเสี่ยง</option>
+          <option value="meeting">☕ จุดรวมตัว</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>คุณลักษณะทางสังคม/สุขภาพ</label>
+      <div class="checkbox-group" id="mpTags">
+        <label class="check-pill"><input type="checkbox" value="ผู้สูงอายุติดบ้าน"> ผู้สูงอายุติดบ้าน</label>
+        <label class="check-pill"><input type="checkbox" value="ผู้ป่วยเบาหวาน"> ผู้ป่วยเบาหวาน</label>
+        <label class="check-pill"><input type="checkbox" value="ผู้ป่วยความดัน"> ผู้ป่วยความดัน</label>
+        <label class="check-pill"><input type="checkbox" value="ผู้พิการ"> ผู้พิการ</label>
+        <label class="check-pill"><input type="checkbox" value="แม่และเด็ก"> แม่และเด็ก</label>
+        <label class="check-pill"><input type="checkbox" value="ครัวเรือนยากจน"> ครัวเรือนยากจน</label>
+        <label class="check-pill"><input type="checkbox" value="ครอบครัวเดี่ยว"> ครอบครัวเดี่ยว</label>
+        <label class="check-pill"><input type="checkbox" value="แหล่งรวมกลุ่ม"> แหล่งรวมกลุ่ม</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>รายละเอียดเพิ่มเติม</label>
+      <textarea id="mpNote" placeholder="ข้อมูลเพิ่มเติม เช่น จำนวนสมาชิก ผู้ดูแลหลัก ฯลฯ"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" id="mpDeleteBtn" onclick="deleteMapPoint()" style="margin-right:auto;display:none">ลบจุดนี้</button>
+      <button class="btn" onclick="closeModal('mapPointModal')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveMapPoint()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- Person modal (genogram) -->
+<div class="modal-bg" id="personModal">
+  <div class="modal">
+    <h3 id="personModalTitle">เพิ่มบุคคล</h3>
+    <input type="hidden" id="pId">
+    <div class="form-row">
+      <div class="form-group">
+        <label>ชื่อ-นามสกุล *</label>
+        <input type="text" id="pName">
+      </div>
+      <div class="form-group">
+        <label>เพศ</label>
+        <select id="pGender">
+          <option value="male">ชาย</option>
+          <option value="female">หญิง</option>
+          <option value="other">อื่นๆ</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>อายุ</label>
+        <input type="number" id="pAge" min="0">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>สถานะ</label>
+        <select id="pStatus">
+          <option value="alive">มีชีวิต</option>
+          <option value="deceased">เสียชีวิต</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>บทบาท</label>
+        <select id="pRole">
+          <option value="">— ไม่ระบุ —</option>
+          <option value="head">หัวหน้าครอบครัว</option>
+          <option value="caregiver">⭐ ผู้ดูแลหลัก</option>
+          <option value="decision">ผู้ตัดสินใจสุขภาพ</option>
+          <option value="patient">ผู้ป่วยหลัก</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>ความสัมพันธ์กับครอบครัว (สามารถเลือก parent ได้)</label>
+      <select id="pParent"><option value="">— ไม่มี —</option></select>
+    </div>
+    <div class="form-group">
+      <label>คู่สมรส</label>
+      <select id="pSpouse"><option value="">— ไม่มี —</option></select>
+    </div>
+    <div class="form-group">
+      <label>โรคประจำตัว / ปัญหาสุขภาพ</label>
+      <input type="text" id="pIllness" placeholder="เช่น เบาหวาน ความดัน อัมพฤกษ์">
+    </div>
+    <div class="form-group">
+      <label>หมายเหตุ</label>
+      <textarea id="pNote"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" id="pDeleteBtn" onclick="deletePerson()" style="margin-right:auto;display:none">ลบ</button>
+      <button class="btn" onclick="closeModal('personModal')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="savePerson()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- Org modal -->
+<div class="modal-bg" id="orgModal">
+  <div class="modal">
+    <h3 id="orgModalTitle">เพิ่มองค์กร/กลุ่ม</h3>
+    <input type="hidden" id="oId">
+    <div class="form-row">
+      <div class="form-group">
+        <label>ชื่อองค์กร/กลุ่ม *</label>
+        <input type="text" id="oName" placeholder="เช่น กลุ่มแม่บ้าน, อบต. ตำบลฯ">
+      </div>
+      <div class="form-group">
+        <label>ประเภท</label>
+        <select id="oType">
+          <option value="formal">ทางการ</option>
+          <option value="informal">ไม่ทางการ</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>ผู้นำ/ผู้รับผิดชอบ</label>
+        <input type="text" id="oLeader">
+      </div>
+      <div class="form-group">
+        <label>เบอร์ติดต่อ</label>
+        <input type="text" id="oContact">
+      </div>
+      <div class="form-group">
+        <label>จำนวนสมาชิกโดยประมาณ</label>
+        <input type="number" id="oMembers" min="0">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>บทบาท/กิจกรรมหลัก</label>
+      <textarea id="oRole" placeholder="เช่น ออมทรัพย์ ดูแลผู้สูงอายุ ประสานงานสาธารณสุข"></textarea>
+    </div>
+    <div class="form-group">
+      <label>ความสำคัญต่อสุขภาพชุมชน</label>
+      <select id="oImpact">
+        <option value="high">สูง — ควรประสานงาน</option>
+        <option value="medium">ปานกลาง</option>
+        <option value="low">ต่ำ</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" id="oDeleteBtn" onclick="deleteOrg()" style="margin-right:auto;display:none">ลบ</button>
+      <button class="btn" onclick="closeModal('orgModal')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveOrg()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- Health modal -->
+<div class="modal-bg" id="healthModal">
+  <div class="modal">
+    <h3 id="healthModalTitle">เพิ่มผู้ให้บริการสุขภาพ</h3>
+    <input type="hidden" id="hId">
+    <div class="form-row">
+      <div class="form-group">
+        <label>ชื่อผู้ให้บริการ/สถานที่ *</label>
+        <input type="text" id="hName" placeholder="เช่น หมอประเสริฐ (หมอพื้นบ้าน), ร้านยานพดล">
+      </div>
+      <div class="form-group">
+        <label>หมวด</label>
+        <select id="hCategory">
+          <option value="modern">การแพทย์สมัยใหม่ (รพ.สต., รพ., คลินิก)</option>
+          <option value="traditional">การแพทย์พื้นบ้าน/แผนไทย</option>
+          <option value="self">การดูแลตนเอง/ครัวเรือน</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>ลำดับการไปหา (1 = ไปก่อน)</label>
+        <input type="number" id="hOrder" min="1" max="10" value="1">
+      </div>
+      <div class="form-group">
+        <label>ระยะทาง (กม.)</label>
+        <input type="number" id="hDistance" min="0" step="0.1">
+      </div>
+      <div class="form-group">
+        <label>ความถี่ในการใช้</label>
+        <select id="hFreq">
+          <option>บ่อยที่สุด</option>
+          <option>บ่อย</option>
+          <option>ปานกลาง</option>
+          <option>นานๆ ครั้ง</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>ปัญหาสุขภาพที่นิยมพึ่งบริการนี้</label>
+      <input type="text" id="hProblems" placeholder="เช่น ปวดเมื่อย ไข้หวัด คลอดลูก ฯลฯ">
+    </div>
+    <div class="form-group">
+      <label>ความเชื่อ/มุมมองของชาวบ้าน</label>
+      <textarea id="hBelief" placeholder="เช่น เชื่อว่าหมอพื้นบ้านรักษาได้ตรงโรค"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" id="hDeleteBtn" onclick="deleteHealth()" style="margin-right:auto;display:none">ลบ</button>
+      <button class="btn" onclick="closeModal('healthModal')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveHealth()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- Calendar event modal -->
+<div class="modal-bg" id="calendarModal">
+  <div class="modal">
+    <h3>เพิ่มกิจกรรมในเดือน <span id="calMonthLabel"></span></h3>
+    <input type="hidden" id="calMonth">
+    <div class="form-row">
+      <div class="form-group">
+        <label>ชื่อกิจกรรม/เทศกาล *</label>
+        <input type="text" id="calTitle" placeholder="เช่น เก็บเกี่ยวข้าว, บุญบั้งไฟ">
+      </div>
+      <div class="form-group">
+        <label>ประเภท</label>
+        <select id="calType">
+          <option value="harvest">การเกษตร/เก็บเกี่ยว</option>
+          <option value="festival">เทศกาล/บุญประเพณี</option>
+          <option value="migration">ฤดูทำงานนอกพื้นที่</option>
+          <option value="health">โครงการสุขภาพ</option>
+          <option value="weather">ฤดูกาล/สภาพอากาศ</option>
+          <option value="other">อื่นๆ</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>รายละเอียด / ข้อควรระวังในการจัดกิจกรรม</label>
+      <textarea id="calDesc" placeholder="เช่น ชาวบ้านยุ่งกับการเก็บเกี่ยว ไม่ควรนัดประชุมในช่วงนี้"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('calendarModal')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveCalendarEvent()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- History modal -->
+<div class="modal-bg" id="historyModal">
+  <div class="modal">
+    <h3 id="historyModalTitle">เพิ่มเหตุการณ์ในประวัติศาสตร์</h3>
+    <input type="hidden" id="hsId">
+    <div class="form-row">
+      <div class="form-group">
+        <label>ปี พ.ศ. *</label>
+        <input type="number" id="hsYear" min="2400" max="2700" placeholder="เช่น 2540">
+      </div>
+      <div class="form-group">
+        <label>หัวข้อ *</label>
+        <input type="text" id="hsTitle" placeholder="เช่น น้ำท่วมใหญ่, ก่อตั้งกลุ่มออมทรัพย์">
+      </div>
+      <div class="form-group">
+        <label>ประเภท</label>
+        <select id="hsType">
+          <option value="origin">การก่อตั้ง/จุดเริ่มต้น</option>
+          <option value="disaster">ภัยพิบัติ/วิกฤต</option>
+          <option value="development">การพัฒนา</option>
+          <option value="culture">วัฒนธรรม/ประเพณี</option>
+          <option value="health">เหตุการณ์ด้านสุขภาพ</option>
+          <option value="other">อื่นๆ</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>รายละเอียด</label>
+      <textarea id="hsDesc" placeholder="เล่าเรื่องราว ผลกระทบ และบทเรียน"></textarea>
+    </div>
+    <div class="form-group">
+      <label>ผู้เล่า/แหล่งข้อมูล</label>
+      <input type="text" id="hsSource">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" id="hsDeleteBtn" onclick="deleteHistory()" style="margin-right:auto;display:none">ลบ</button>
+      <button class="btn" onclick="closeModal('historyModal')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveHistory()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- Life history modal -->
+<div class="modal-bg" id="lifeModal">
+  <div class="modal">
+    <h3 id="lifeModalTitle">เพิ่มประวัติชีวิต</h3>
+    <input type="hidden" id="lfId">
+    <div class="form-row">
+      <div class="form-group">
+        <label>ชื่อ-นามสกุล *</label>
+        <input type="text" id="lfName">
+      </div>
+      <div class="form-group">
+        <label>อายุ</label>
+        <input type="number" id="lfAge" min="0">
+      </div>
+      <div class="form-group">
+        <label>เพศ</label>
+        <select id="lfGender"><option value="male">ชาย</option><option value="female">หญิง</option><option value="other">อื่นๆ</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>บทบาทในชุมชน</label>
+        <input type="text" id="lfRole" placeholder="เช่น ปราชญ์ชาวบ้าน, อสม. ดีเด่น">
+      </div>
+      <div class="form-group">
+        <label>วันสัมภาษณ์</label>
+        <input type="date" id="lfDate">
+      </div>
+      <div class="form-group">
+        <label>ผู้สัมภาษณ์</label>
+        <input type="text" id="lfInterviewer">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>ภูมิหลัง / ครอบครัว</label>
+      <textarea id="lfBackground"></textarea>
+    </div>
+    <div class="form-group">
+      <label>เหตุการณ์สำคัญในชีวิต</label>
+      <textarea id="lfEvents"></textarea>
+    </div>
+    <div class="form-group">
+      <label>วิธีคิด / ปรัชญาการใช้ชีวิต</label>
+      <textarea id="lfPhilosophy"></textarea>
+    </div>
+    <div class="form-group">
+      <label>มุมมองต่อสุขภาพและชุมชน</label>
+      <textarea id="lfHealthView"></textarea>
+    </div>
+    <div class="form-group">
+      <label>คำคม / ข้อเรียนรู้ที่น่าจดจำ</label>
+      <textarea id="lfQuote" placeholder="คำพูดที่สะท้อนแก่นความคิด"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" id="lfDeleteBtn" onclick="deleteLife()" style="margin-right:auto;display:none">ลบ</button>
+      <button class="btn" onclick="closeModal('lifeModal')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveLife()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sync Settings modal -->
+<div class="modal-bg" id="syncModal">
+  <div class="modal">
+    <h3>☁️ ตั้งค่า Google Sheets</h3>
+    <p class="small">วาง URL ของ Google Apps Script Web App ที่คุณ deploy ไว้ (ดูวิธีติดตั้งในไฟล์ SETUP-GUIDE.md)</p>
+    <div class="form-group">
+      <label>Web App URL *</label>
+      <input type="text" id="syncUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
+    </div>
+    <div class="form-group">
+      <label><input type="checkbox" id="autoSyncToggle"> เปิด auto-sync (บันทึกขึ้น Sheet อัตโนมัติเมื่อแก้ไข)</label>
+    </div>
+    <div id="syncTestResult" class="small" style="margin-top:8px"></div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" onclick="clearSheetData()" style="margin-right:auto" title="ล้างข้อมูลทุก sheet (ไม่กระทบข้อมูลในแอพ)">🗑️ ล้าง Sheet</button>
+      <button class="btn" onclick="testSyncConnection()">🔍 ทดสอบ</button>
+      <button class="btn" onclick="closeModal('syncModal')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveSyncSettings()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   แฟ้มชุมชน — Community File Web App
+   localStorage key: 'communityFileApp'
+   ============================================================ */
+
+const STORAGE_KEY = 'communityFileApp';
+const SYNC_URL_KEY = 'communityFileAppSyncUrl';
+const AUTO_SYNC_KEY = 'communityFileAppAutoSync';
+
+let syncUrl = localStorage.getItem(SYNC_URL_KEY) || '';
+let autoSync = localStorage.getItem(AUTO_SYNC_KEY) === 'true';
+let syncDebounce = null;
+let syncing = false;
+const THAI_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
+                     'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+
+const TYPE_COLORS = {
+  house:'#3b82f6', elderly:'#a855f7', bedridden:'#dc2626', leader:'#f59e0b',
+  temple:'#8b5cf6', school:'#0ea5e9', health:'#16a34a', shop:'#eab308',
+  risk:'#ef4444', meeting:'#06b6d4'
+};
+const TYPE_LABELS = {
+  house:'บ้าน', elderly:'ผู้สูงอายุ', bedridden:'ติดเตียง', leader:'ผู้นำ',
+  temple:'วัด', school:'โรงเรียน', health:'รพ.สต.', shop:'ร้านค้า',
+  risk:'จุดเสี่ยง', meeting:'จุดรวมตัว'
+};
+const TYPE_ICONS = {
+  house:'🏠', elderly:'👴', bedridden:'🛏️', leader:'⭐',
+  temple:'🛕', school:'🏫', health:'🏥', shop:'🏪',
+  risk:'⚠️', meeting:'☕'
+};
+
+let state = loadState();
+let currentCommunityId = state.communities[0]?.id || null;
+let mapMode = 'add';
+let orgFilter = 'all';
+let healthFilter = 'all';
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){ return JSON.parse(raw); }
+  }catch(e){console.error(e)}
+  // Default seed: 12 หมู่บ้าน ตำบลคำใหญ่ อำเภอห้วยเม็ก จังหวัดกาฬสินธุ์
+  const villages = [
+    {n:1,  name:'หมู่ 1 บ้านหัวสนาม'},
+    {n:2,  name:'หมู่ 2 บ้านคำเจริญ'},
+    {n:3,  name:'หมู่ 3 บ้านชัยศรี'},
+    {n:4,  name:'หมู่ 4 บ้านนาดี'},
+    {n:5,  name:'หมู่ 5 บ้านห้วยยาง'},
+    {n:6,  name:'หมู่ 6 บ้านห้วยม่วง'},
+    {n:7,  name:'หมู่ 7 บ้านคำใหญ่'},
+    {n:8,  name:'หมู่ 8 บ้านคำถาวร'},
+    {n:9,  name:'หมู่ 9 บ้านโพธิ์ทอง'},
+    {n:10, name:'หมู่ 10 บ้านโคกป่ากุง'},
+    {n:11, name:'หมู่ 11 บ้านคำใหญ่'},
+    {n:12, name:'หมู่ 12 บ้านคำเจริญ'}
+  ];
+  return {
+    tambon:'คำใหญ่', amphoe:'ห้วยเม็ก', province:'กาฬสินธุ์',
+    communities: villages.map(v=>({
+      id:'v'+v.n,
+      moo: v.n,
+      name: v.name,
+      tambon:'คำใหญ่', amphoe:'ห้วยเม็ก', province:'กาฬสินธุ์',
+      note:'',
+      mapPoints:[], persons:[], orgs:[], healthProviders:[],
+      calendarEvents:{}, historyEvents:[], lifeHistories:[]
+    }))
+  };
+}
+
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  if(autoSync && syncUrl){ scheduleSync(); }
+}
+
+/* ============ Sync with Google Sheets ============ */
+function setSyncStatus(s){
+  const icon = document.getElementById('syncStatusIcon');
+  const text = document.getElementById('syncStatusText');
+  if(!icon || !text) return;
+  if(!syncUrl){ icon.textContent='☁️'; text.textContent='Sheets'; return; }
+  switch(s){
+    case 'pending':  icon.textContent='⏳'; text.textContent='รอ sync'; break;
+    case 'syncing':  icon.textContent='🔄'; text.textContent='กำลัง sync'; break;
+    case 'success':  icon.textContent='✅'; text.textContent='sync แล้ว'; break;
+    case 'error':    icon.textContent='❌'; text.textContent='ผิดพลาด'; break;
+    default:         icon.textContent='☁️'; text.textContent= autoSync?'auto-sync':'manual';
+  }
+}
+
+function scheduleSync(){
+  if(!syncUrl){ return; }
+  setSyncStatus('pending');
+  clearTimeout(syncDebounce);
+  syncDebounce = setTimeout(pushToSheet, 1800);
+}
+
+async function pushToSheet(silent){
+  if(!syncUrl){ if(!silent) alert('ยังไม่ได้ตั้งค่า Web App URL'); return; }
+  if(syncing) return;
+  syncing = true;
+  setSyncStatus('syncing');
+  try{
+    const resp = await fetch(syncUrl, {
+      method:'POST',
+      body: JSON.stringify({action:'push', data: state}),
+      headers: {'Content-Type':'text/plain;charset=utf-8'},
+      redirect: 'follow'
+    });
+    const result = await resp.json();
+    if(result.ok){
+      setSyncStatus('success');
+      if(!silent) toast('☁️ '+(result.message||'sync สำเร็จ'));
+      setTimeout(()=>setSyncStatus('idle'), 2200);
+    } else {
+      throw new Error(result.error||'ไม่ทราบสาเหตุ');
+    }
+  }catch(err){
+    setSyncStatus('error');
+    if(!silent) alert('Sync ไม่สำเร็จ: '+err.message+'\n\nตรวจสอบว่า URL ถูกต้องและ Deploy เป็น "ทุกคน" (Anyone)');
+    console.error(err);
+  }finally{
+    syncing = false;
+  }
+}
+
+async function pullFromSheet(){
+  if(!syncUrl){ alert('ยังไม่ได้ตั้งค่า Web App URL — กดปุ่ม ☁️ Sheets เพื่อตั้งค่า'); return; }
+  if(!confirm('⚠️ ดึงข้อมูลจาก Google Sheet มาแทนข้อมูลปัจจุบัน?\n(ข้อมูลในแอพปัจจุบันจะถูกแทนที่)')) return;
+  syncing = true;
+  setSyncStatus('syncing');
+  try{
+    const resp = await fetch(syncUrl+'?action=pull', {redirect:'follow'});
+    const result = await resp.json();
+    if(result.ok && result.data){
+      // ถ้า Sheet ยังว่าง ให้คงข้อมูลปัจจุบันไว้
+      if(!result.data.communities || result.data.communities.length===0){
+        toast('Sheet ยังไม่มีข้อมูล — คงข้อมูลปัจจุบันไว้');
+      } else {
+        state = result.data;
+        currentCommunityId = state.communities[0]?.id;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        renderAll();
+        toast('✅ ดึงข้อมูล '+result.data.communities.length+' หมู่บ้านจาก Sheet แล้ว');
+      }
+      setSyncStatus('success');
+      setTimeout(()=>setSyncStatus('idle'), 2200);
+    } else {
+      throw new Error(result.error||'ไม่ทราบสาเหตุ');
+    }
+  }catch(err){
+    setSyncStatus('error');
+    alert('ดึงข้อมูลไม่สำเร็จ: '+err.message);
+  }finally{
+    syncing = false;
+  }
+}
+
+function openSyncModal(){
+  document.getElementById('syncUrlInput').value = syncUrl;
+  document.getElementById('autoSyncToggle').checked = autoSync;
+  document.getElementById('syncTestResult').textContent = '';
+  openModal('syncModal');
+}
+
+function saveSyncSettings(){
+  const url = document.getElementById('syncUrlInput').value.trim();
+  syncUrl = url;
+  autoSync = document.getElementById('autoSyncToggle').checked;
+  localStorage.setItem(SYNC_URL_KEY, syncUrl);
+  localStorage.setItem(AUTO_SYNC_KEY, autoSync?'true':'false');
+  closeModal('syncModal');
+  setSyncStatus('idle');
+  toast('บันทึกการตั้งค่าแล้ว');
+  if(autoSync && syncUrl){ scheduleSync(); }
+}
+
+async function testSyncConnection(){
+  const url = document.getElementById('syncUrlInput').value.trim();
+  const r = document.getElementById('syncTestResult');
+  if(!url){ r.textContent='กรุณาวาง URL ก่อน'; r.style.color='var(--danger)'; return; }
+  r.textContent = '⏳ กำลังทดสอบ...';
+  r.style.color = 'var(--muted)';
+  try{
+    const resp = await fetch(url+'?action=pull', {redirect:'follow'});
+    const result = await resp.json();
+    if(result.ok){
+      const n = result.data?.communities?.length||0;
+      r.innerHTML = '✅ เชื่อมต่อสำเร็จ — Sheet มี '+n+' หมู่บ้าน';
+      r.style.color = 'var(--success)';
+    } else {
+      r.textContent = '⚠️ '+result.error;
+      r.style.color = 'var(--danger)';
+    }
+  }catch(err){
+    r.textContent = '❌ เชื่อมต่อไม่ได้: '+err.message;
+    r.style.color = 'var(--danger)';
+  }
+}
+
+async function clearSheetData(){
+  if(!syncUrl){ alert('ยังไม่ได้ตั้งค่า URL'); return; }
+  if(!confirm('⚠️ ล้างข้อมูลทั้งหมดใน Google Sheet?\n(ข้อมูลในแอพปัจจุบันจะยังอยู่ — สามารถ push กลับขึ้นไปได้)')) return;
+  try{
+    const resp = await fetch(syncUrl, {
+      method:'POST',
+      body: JSON.stringify({action:'clear'}),
+      headers: {'Content-Type':'text/plain;charset=utf-8'},
+      redirect:'follow'
+    });
+    const result = await resp.json();
+    if(result.ok){ toast('ล้าง Sheet แล้ว'); } else { alert('ผิดพลาด: '+result.error); }
+  }catch(err){ alert('ผิดพลาด: '+err.message); }
+}
+
+function uid(){
+  return Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+}
+
+function currentCommunity(){
+  return state.communities.find(c=>c.id===currentCommunityId);
+}
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._tid);
+  t._tid = setTimeout(()=>t.classList.remove('show'), 2400);
+}
+
+/* ============ Community selector ============ */
+function renderCommunitySelector(){
+  const sel = document.getElementById('communitySelector');
+  sel.innerHTML = state.communities.map(c=>
+    `<option value="${c.id}" ${c.id===currentCommunityId?'selected':''}>${escapeHtml(c.name)}</option>`
+  ).join('');
+}
+
+function switchCommunity(id){
+  currentCommunityId = id;
+  saveState();
+  renderAll();
+}
+
+function openCommunityModal(){
+  document.getElementById('cmName').value='';
+  document.getElementById('cmTambon').value=state.tambon||'คำใหญ่';
+  document.getElementById('cmAmphoe').value=state.amphoe||'ห้วยเม็ก';
+  document.getElementById('cmProvince').value=state.province||'กาฬสินธุ์';
+  document.getElementById('cmNote').value='';
+  openModal('communityModal');
+}
+
+function saveCommunity(){
+  const name = document.getElementById('cmName').value.trim();
+  if(!name){ alert('กรุณากรอกชื่อชุมชน'); return; }
+  const c = {
+    id:uid(), name,
+    tambon:document.getElementById('cmTambon').value.trim(),
+    amphoe:document.getElementById('cmAmphoe').value.trim(),
+    province:document.getElementById('cmProvince').value.trim(),
+    note:document.getElementById('cmNote').value.trim(),
+    mapPoints:[], persons:[], orgs:[], healthProviders:[],
+    calendarEvents:{}, historyEvents:[], lifeHistories:[]
+  };
+  state.communities.push(c);
+  currentCommunityId = c.id;
+  saveState();
+  renderAll();
+  closeModal('communityModal');
+  toast('สร้างชุมชน "'+name+'" แล้ว');
+}
+
+/* ============ Navigation ============ */
+function showHome(){
+  document.querySelectorAll('.tool-view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('homeView').style.display='block';
+  document.getElementById('overviewView').style.display='none';
+  renderDashboard();
+}
+
+function showOverview(){
+  document.querySelectorAll('.tool-view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('homeView').style.display='none';
+  document.getElementById('overviewView').style.display='block';
+  renderOverview();
+}
+
+function renderOverview(){
+  // Tambon-wide stats
+  let totals = {map:0,persons:0,orgs:0,health:0,cal:0,history:0,life:0};
+  state.communities.forEach(c=>{
+    totals.map += c.mapPoints?.length||0;
+    totals.persons += c.persons?.length||0;
+    totals.orgs += c.orgs?.length||0;
+    totals.health += c.healthProviders?.length||0;
+    totals.cal += Object.values(c.calendarEvents||{}).reduce((a,b)=>a+(b?.length||0),0);
+    totals.history += c.historyEvents?.length||0;
+    totals.life += c.lifeHistories?.length||0;
+  });
+  document.getElementById('overviewStats').innerHTML = `
+    <div class="stat-item"><div class="num">${state.communities.length}</div><div class="lab">หมู่บ้าน</div></div>
+    <div class="stat-item"><div class="num">${totals.map}</div><div class="lab">จุดบนแผนที่</div></div>
+    <div class="stat-item"><div class="num">${totals.persons}</div><div class="lab">บุคคลในผัง</div></div>
+    <div class="stat-item"><div class="num">${totals.orgs}</div><div class="lab">องค์กร/กลุ่ม</div></div>
+    <div class="stat-item"><div class="num">${totals.health}</div><div class="lab">ผู้ให้บริการ</div></div>
+    <div class="stat-item"><div class="num">${totals.cal}</div><div class="lab">กิจกรรมในปฏิทิน</div></div>
+    <div class="stat-item"><div class="num">${totals.history}</div><div class="lab">เหตุการณ์</div></div>
+    <div class="stat-item"><div class="num">${totals.life}</div><div class="lab">ประวัติชีวิต</div></div>
+  `;
+  // Village cards
+  document.getElementById('overviewGrid').innerHTML = state.communities.map(c=>{
+    const cal = Object.values(c.calendarEvents||{}).reduce((a,b)=>a+(b?.length||0),0);
+    const total = (c.mapPoints?.length||0)+(c.persons?.length||0)+(c.orgs?.length||0)+
+                  (c.healthProviders?.length||0)+cal+(c.historyEvents?.length||0)+(c.lifeHistories?.length||0);
+    const filled = total>0;
+    return `
+      <div class="tool-card" onclick="enterVillage('${c.id}')" style="${filled?'border-color:var(--primary-light);background:linear-gradient(135deg,#fff,#f0fdfa)':''}">
+        <span class="num">${c.moo||''}</span>
+        <div class="icon">🏘️</div>
+        <h3>${escapeHtml(c.name)}</h3>
+        <div class="en">ต.${escapeHtml(c.tambon||'')} อ.${escapeHtml(c.amphoe||'')}</div>
+        <div class="desc">
+          🗺️ ${c.mapPoints?.length||0} จุด ·
+          👨‍👩‍👧 ${c.persons?.length||0} คน ·
+          🏛️ ${c.orgs?.length||0} กลุ่ม ·
+          🩺 ${c.healthProviders?.length||0} ·
+          📅 ${cal} ·
+          📜 ${c.historyEvents?.length||0} ·
+          🎙️ ${c.lifeHistories?.length||0}
+        </div>
+        <div class="stat">${filled?`บันทึกแล้ว ${total} รายการ`:'ยังไม่มีข้อมูล'}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function enterVillage(id){
+  currentCommunityId = id;
+  saveState();
+  renderCommunitySelector();
+  showHome();
+}
+
+function showTool(tool){
+  document.getElementById('homeView').style.display='none';
+  document.getElementById('overviewView').style.display='none';
+  document.querySelectorAll('.tool-view').forEach(v=>v.classList.remove('active'));
+  const viewMap = {
+    map:'mapView', genogram:'genogramView', org:'orgView',
+    health:'healthView', calendar:'calendarView', history:'historyView',
+    life:'lifeView'
+  };
+  document.getElementById(viewMap[tool]).classList.add('active');
+  if(tool==='map') renderMap();
+  if(tool==='genogram') renderGenogram();
+  if(tool==='org') renderOrgs();
+  if(tool==='health') renderHealth();
+  if(tool==='calendar') renderCalendar();
+  if(tool==='history') renderHistory();
+  if(tool==='life') renderLife();
+}
+
+/* ============ Dashboard ============ */
+function renderDashboard(){
+  const c = currentCommunity();
+  if(!c){
+    document.getElementById('currentCommunityName').textContent='— ยังไม่มีชุมชน —';
+    document.getElementById('dashboardStats').innerHTML='<div class="stat-item">กรุณาสร้างชุมชนใหม่</div>';
+    return;
+  }
+  document.getElementById('currentCommunityName').textContent = c.name;
+  const loc = [c.tambon?'ต.'+c.tambon:'', c.amphoe?'อ.'+c.amphoe:'', c.province?'จ.'+c.province:''].filter(Boolean).join(' ');
+  document.getElementById('currentCommunityLocation').textContent = loc;
+  const calCount = Object.values(c.calendarEvents||{}).reduce((a,b)=>a+(b?.length||0),0);
+  document.getElementById('dashboardStats').innerHTML = `
+    <div class="stat-item"><div class="num">${c.mapPoints.length}</div><div class="lab">จุดบนแผนที่</div></div>
+    <div class="stat-item"><div class="num">${c.persons.length}</div><div class="lab">บุคคลในผัง</div></div>
+    <div class="stat-item"><div class="num">${c.orgs.length}</div><div class="lab">องค์กร/กลุ่ม</div></div>
+    <div class="stat-item"><div class="num">${c.healthProviders.length}</div><div class="lab">ผู้ให้บริการ</div></div>
+    <div class="stat-item"><div class="num">${calCount}</div><div class="lab">กิจกรรมในปฏิทิน</div></div>
+    <div class="stat-item"><div class="num">${c.historyEvents.length}</div><div class="lab">เหตุการณ์ประวัติศาสตร์</div></div>
+    <div class="stat-item"><div class="num">${c.lifeHistories.length}</div><div class="lab">ประวัติชีวิต</div></div>
+  `;
+  document.getElementById('stat-map').textContent = c.mapPoints.length+' จุด';
+  document.getElementById('stat-geno').textContent = c.persons.length+' คน';
+  document.getElementById('stat-org').textContent = c.orgs.length+' องค์กร';
+  document.getElementById('stat-health').textContent = c.healthProviders.length+' รายการ';
+  document.getElementById('stat-cal').textContent = calCount+' กิจกรรม';
+  document.getElementById('stat-history').textContent = c.historyEvents.length+' เหตุการณ์';
+  document.getElementById('stat-life').textContent = c.lifeHistories.length+' ประวัติ';
+}
+
+/* ============ 1) Map ============ */
+function setMapMode(m){ mapMode = m; }
+
+function renderMap(){
+  const c = currentCommunity();
+  if(!c) return;
+  const svg = document.getElementById('mapCanvas');
+  svg.innerHTML = `
+    <defs>
+      <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+        <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#d1fae5" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#grid)"/>
+    <path d="M 0 300 Q 200 250 400 320 T 1000 280" stroke="#22c55e" stroke-width="2" fill="none" opacity=".4"/>
+    <text x="20" y="30" fill="#64748b" font-size="14" font-family="inherit">คลิกบนแผนที่เพื่อเพิ่มจุด · เลือกโหมดด้านบน</text>
+  `;
+  c.mapPoints.forEach(p=>drawMapPoint(p));
+  document.getElementById('mapPointCount').textContent = c.mapPoints.length;
+  renderMapPointsList();
+
+  svg.onclick = (e)=>{
+    if(e.target.closest('.map-point-group')) return;
+    const pt = svgPoint(svg, e);
+    if(mapMode==='add'){
+      openMapModal(null, pt.x, pt.y);
+    }
+  };
+}
+
+function svgPoint(svg, evt){
+  const rect = svg.getBoundingClientRect();
+  const vb = svg.viewBox.baseVal;
+  const x = (evt.clientX - rect.left) * (vb.width / rect.width);
+  const y = (evt.clientY - rect.top) * (vb.height / rect.height);
+  return {x:Math.round(x), y:Math.round(y)};
+}
+
+function drawMapPoint(p){
+  const svg = document.getElementById('mapCanvas');
+  const color = TYPE_COLORS[p.type] || '#64748b';
+  const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.setAttribute('class','map-point-group');
+  g.setAttribute('data-id', p.id);
+  g.setAttribute('transform',`translate(${p.x},${p.y})`);
+  g.style.cursor='pointer';
+
+  // Shadow
+  const shadow = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  shadow.setAttribute('cx',0); shadow.setAttribute('cy',2);
+  shadow.setAttribute('r',12); shadow.setAttribute('fill','rgba(0,0,0,.15)');
+  g.appendChild(shadow);
+
+  // Main dot
+  const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  dot.setAttribute('cx',0); dot.setAttribute('cy',0);
+  dot.setAttribute('r',12); dot.setAttribute('fill',color);
+  dot.setAttribute('stroke','#fff'); dot.setAttribute('stroke-width',2);
+  g.appendChild(dot);
+
+  // Icon
+  const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+  txt.setAttribute('x',0); txt.setAttribute('y',5);
+  txt.setAttribute('text-anchor','middle');
+  txt.setAttribute('font-size','14');
+  txt.textContent = TYPE_ICONS[p.type]||'•';
+  g.appendChild(txt);
+
+  // Label
+  if(p.name){
+    const label = document.createElementNS('http://www.w3.org/2000/svg','text');
+    label.setAttribute('x',0); label.setAttribute('y',-18);
+    label.setAttribute('text-anchor','middle');
+    label.setAttribute('font-size','11');
+    label.setAttribute('fill','#0f172a');
+    label.setAttribute('font-family','inherit');
+    label.setAttribute('font-weight','600');
+    label.textContent = p.name.length>20 ? p.name.slice(0,20)+'…' : p.name;
+    g.appendChild(label);
+  }
+
+  g.onclick = (e)=>{
+    e.stopPropagation();
+    if(mapMode==='delete'){
+      if(confirm('ลบจุด "'+p.name+'" ?')){
+        const c = currentCommunity();
+        c.mapPoints = c.mapPoints.filter(x=>x.id!==p.id);
+        saveState(); renderMap();
+      }
+    }else if(mapMode==='move'){
+      svg.style.cursor='move';
+      const move = (ev)=>{
+        const pt = svgPoint(svg, ev);
+        g.setAttribute('transform',`translate(${pt.x},${pt.y})`);
+        p.x = pt.x; p.y = pt.y;
+      };
+      const up = ()=>{
+        document.removeEventListener('mousemove',move);
+        document.removeEventListener('mouseup',up);
+        svg.style.cursor='crosshair';
+        saveState();
+      };
+      document.addEventListener('mousemove',move);
+      document.addEventListener('mouseup',up);
+    }else{
+      openMapModal(p);
+    }
+  };
+  svg.appendChild(g);
+}
+
+function openMapModal(p, x, y){
+  document.getElementById('mapModalTitle').textContent = p?'แก้ไขจุด':'เพิ่มจุดบนแผนที่';
+  document.getElementById('mpId').value = p?.id || '';
+  document.getElementById('mpX').value = p?.x ?? x;
+  document.getElementById('mpY').value = p?.y ?? y;
+  document.getElementById('mpName').value = p?.name || '';
+  document.getElementById('mpType').value = p?.type || document.getElementById('mapPointType').value;
+  document.getElementById('mpNote').value = p?.note || '';
+  document.getElementById('mpDeleteBtn').style.display = p?'inline-flex':'none';
+  // Tags
+  document.querySelectorAll('#mpTags input[type=checkbox]').forEach(cb=>{
+    cb.checked = p?.tags?.includes(cb.value) || false;
+    cb.parentElement.classList.toggle('active', cb.checked);
+  });
+  document.querySelectorAll('#mpTags .check-pill').forEach(pill=>{
+    pill.onclick = ()=>{
+      setTimeout(()=>pill.classList.toggle('active', pill.querySelector('input').checked), 0);
+    };
+  });
+  openModal('mapPointModal');
+}
+
+function saveMapPoint(){
+  const c = currentCommunity();
+  const id = document.getElementById('mpId').value;
+  const data = {
+    id: id || uid(),
+    x: parseFloat(document.getElementById('mpX').value),
+    y: parseFloat(document.getElementById('mpY').value),
+    name: document.getElementById('mpName').value.trim()||'(ไม่ระบุ)',
+    type: document.getElementById('mpType').value,
+    note: document.getElementById('mpNote').value.trim(),
+    tags: [...document.querySelectorAll('#mpTags input:checked')].map(cb=>cb.value)
+  };
+  if(id){
+    const idx = c.mapPoints.findIndex(p=>p.id===id);
+    c.mapPoints[idx] = data;
+  }else{
+    c.mapPoints.push(data);
+  }
+  saveState();
+  closeModal('mapPointModal');
+  renderMap();
+  toast('บันทึกแล้ว');
+}
+
+function deleteMapPoint(){
+  const c = currentCommunity();
+  const id = document.getElementById('mpId').value;
+  if(!id) return;
+  if(confirm('ลบจุดนี้?')){
+    c.mapPoints = c.mapPoints.filter(p=>p.id!==id);
+    saveState();
+    closeModal('mapPointModal');
+    renderMap();
+  }
+}
+
+function renderMapPointsList(){
+  const c = currentCommunity();
+  const el = document.getElementById('mapPointsList');
+  if(!c.mapPoints.length){
+    el.innerHTML = '<div class="empty-state"><div class="icon">🗺️</div>ยังไม่มีจุดบนแผนที่ — คลิกบนแผนที่เพื่อเพิ่มจุดแรก</div>';
+    return;
+  }
+  el.innerHTML = '<div class="card-list">'+c.mapPoints.map(p=>`
+    <div class="item-card">
+      <h4>${TYPE_ICONS[p.type]||'•'} ${escapeHtml(p.name)} <span class="badge">${TYPE_LABELS[p.type]||''}</span></h4>
+      ${p.tags?.length?`<div class="meta">${p.tags.map(t=>`<span class="pill">${escapeHtml(t)}</span>`).join(' ')}</div>`:''}
+      ${p.note?`<div class="desc">${escapeHtml(p.note)}</div>`:''}
+      <div class="meta small">พิกัด: ${Math.round(p.x)}, ${Math.round(p.y)}</div>
+      <div class="actions">
+        <button class="btn btn-sm" onclick="openMapModalById('${p.id}')">✏️</button>
+      </div>
+    </div>
+  `).join('')+'</div>';
+}
+
+function openMapModalById(id){
+  const p = currentCommunity().mapPoints.find(x=>x.id===id);
+  if(p) openMapModal(p);
+}
+
+function clearMap(){
+  if(confirm('ล้างจุดทั้งหมดบนแผนที่?')){
+    currentCommunity().mapPoints = [];
+    saveState(); renderMap();
+  }
+}
+
+function resetMapView(){
+  document.getElementById('mapCanvas').setAttribute('viewBox','0 0 1000 600');
+}
+
+/* ============ 2) Genogram ============ */
+function renderGenogram(){
+  renderGenoChart();
+  renderPersonList();
+}
+
+function switchGenoTab(e, tab){
+  document.querySelectorAll('#genogramView .tab').forEach(t=>t.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById('genoChartTab').style.display = tab==='chart'?'block':'none';
+  document.getElementById('genoListTab').style.display = tab==='list'?'block':'none';
+}
+
+function renderGenoChart(){
+  const c = currentCommunity();
+  const svg = document.getElementById('genoCanvas');
+  svg.innerHTML = '';
+  if(!c.persons.length){
+    svg.innerHTML = '<text x="500" y="300" text-anchor="middle" fill="#94a3b8" font-size="16" font-family="inherit">ยังไม่มีบุคคล — กดปุ่ม "เพิ่มบุคคล" เพื่อเริ่มต้น</text>';
+    return;
+  }
+
+  // Build hierarchy by generations
+  // Generation logic: roots (no parent) = gen 0, children = gen of parent + 1
+  const persons = c.persons;
+  const genMap = {};
+  function getGen(p, visited=new Set()){
+    if(genMap[p.id]!==undefined) return genMap[p.id];
+    if(visited.has(p.id)) return 0;
+    visited.add(p.id);
+    if(!p.parentId){ genMap[p.id]=0; return 0; }
+    const parent = persons.find(x=>x.id===p.parentId);
+    if(!parent){ genMap[p.id]=0; return 0; }
+    const g = getGen(parent, visited)+1;
+    genMap[p.id] = g;
+    return g;
+  }
+  persons.forEach(p=>getGen(p));
+  // Group by generation
+  const gens = {};
+  persons.forEach(p=>{
+    const g = genMap[p.id];
+    (gens[g] = gens[g]||[]).push(p);
+  });
+
+  const W = 1000, H = 600;
+  const gKeys = Object.keys(gens).map(Number).sort((a,b)=>a-b);
+  const rowH = Math.min(150, (H-80)/Math.max(gKeys.length,1));
+
+  const pos = {};
+  gKeys.forEach((g,gi)=>{
+    const arr = gens[g];
+    const spacing = W/(arr.length+1);
+    arr.forEach((p,i)=>{
+      pos[p.id] = { x: spacing*(i+1), y: 60 + gi*rowH };
+    });
+  });
+
+  // Draw connections (parent->child)
+  persons.forEach(p=>{
+    if(p.parentId && pos[p.parentId] && pos[p.id]){
+      const a = pos[p.parentId], b = pos[p.id];
+      const line = document.createElementNS('http://www.w3.org/2000/svg','path');
+      line.setAttribute('d',`M ${a.x} ${a.y+25} L ${a.x} ${(a.y+b.y)/2} L ${b.x} ${(a.y+b.y)/2} L ${b.x} ${b.y-25}`);
+      line.setAttribute('stroke','#64748b'); line.setAttribute('fill','none'); line.setAttribute('stroke-width','2');
+      svg.appendChild(line);
+    }
+  });
+
+  // Draw spouse lines (double line)
+  persons.forEach(p=>{
+    if(p.spouseId && pos[p.spouseId] && pos[p.id] && p.id < p.spouseId){
+      const a = pos[p.id], b = pos[p.spouseId];
+      [-2,2].forEach(off=>{
+        const l = document.createElementNS('http://www.w3.org/2000/svg','line');
+        l.setAttribute('x1',a.x+22); l.setAttribute('x2',b.x-22);
+        l.setAttribute('y1',a.y+off); l.setAttribute('y2',b.y+off);
+        l.setAttribute('stroke','#dc2626'); l.setAttribute('stroke-width','1.5');
+        svg.appendChild(l);
+      });
+    }
+  });
+
+  // Draw persons
+  persons.forEach(p=>{
+    const pt = pos[p.id]; if(!pt) return;
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('transform',`translate(${pt.x},${pt.y})`);
+    g.style.cursor='pointer';
+
+    let shape;
+    if(p.gender==='male'){
+      shape = document.createElementNS('http://www.w3.org/2000/svg','rect');
+      shape.setAttribute('x',-22); shape.setAttribute('y',-22);
+      shape.setAttribute('width',44); shape.setAttribute('height',44);
+    }else{
+      shape = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      shape.setAttribute('r',22);
+    }
+    const color = p.role==='caregiver' ? '#fbbf24' : (p.gender==='male' ? '#bfdbfe' : '#fbcfe8');
+    shape.setAttribute('fill', p.status==='deceased' ? '#cbd5e1' : color);
+    shape.setAttribute('stroke','#475569'); shape.setAttribute('stroke-width','2');
+    g.appendChild(shape);
+
+    // Death cross
+    if(p.status==='deceased'){
+      const x1 = document.createElementNS('http://www.w3.org/2000/svg','line');
+      x1.setAttribute('x1',-22); x1.setAttribute('y1',-22);
+      x1.setAttribute('x2',22); x1.setAttribute('y2',22);
+      x1.setAttribute('stroke','#991b1b'); x1.setAttribute('stroke-width','2');
+      g.appendChild(x1);
+      const x2 = document.createElementNS('http://www.w3.org/2000/svg','line');
+      x2.setAttribute('x1',22); x2.setAttribute('y1',-22);
+      x2.setAttribute('x2',-22); x2.setAttribute('y2',22);
+      x2.setAttribute('stroke','#991b1b'); x2.setAttribute('stroke-width','2');
+      g.appendChild(x2);
+    }
+
+    // Caregiver star
+    if(p.role==='caregiver'){
+      const star = document.createElementNS('http://www.w3.org/2000/svg','text');
+      star.setAttribute('x',20); star.setAttribute('y',-15);
+      star.setAttribute('font-size','16'); star.textContent='⭐';
+      g.appendChild(star);
+    }
+
+    // Name label
+    const name = document.createElementNS('http://www.w3.org/2000/svg','text');
+    name.setAttribute('y',38); name.setAttribute('text-anchor','middle');
+    name.setAttribute('font-size','12'); name.setAttribute('font-family','inherit');
+    name.setAttribute('font-weight','600'); name.setAttribute('fill','#0f172a');
+    name.textContent = p.name.length>14 ? p.name.slice(0,14)+'…' : p.name;
+    g.appendChild(name);
+
+    if(p.age!==undefined && p.age!==null && p.age!==''){
+      const age = document.createElementNS('http://www.w3.org/2000/svg','text');
+      age.setAttribute('y',52); age.setAttribute('text-anchor','middle');
+      age.setAttribute('font-size','11'); age.setAttribute('fill','#64748b');
+      age.textContent = p.age+' ปี';
+      g.appendChild(age);
+    }
+
+    g.onclick = ()=>openPersonModal(p);
+    svg.appendChild(g);
+  });
+}
+
+function renderPersonList(){
+  const c = currentCommunity();
+  const el = document.getElementById('personList');
+  if(!c.persons.length){
+    el.innerHTML = '<div class="empty-state"><div class="icon">👨‍👩‍👧</div>ยังไม่มีบุคคล</div>';
+    return;
+  }
+  el.innerHTML = c.persons.map(p=>{
+    const parent = c.persons.find(x=>x.id===p.parentId);
+    const spouse = c.persons.find(x=>x.id===p.spouseId);
+    const genderIcon = p.gender==='male'?'♂':p.gender==='female'?'♀':'⚧';
+    return `
+      <div class="item-card">
+        <h4>${genderIcon} ${escapeHtml(p.name)} ${p.role==='caregiver'?'⭐':''}
+          ${p.status==='deceased'?'<span class="pill pill-danger">เสียชีวิต</span>':''}
+        </h4>
+        <div class="meta">
+          ${p.age?p.age+' ปี · ':''}
+          ${p.role?roleLabel(p.role):''}
+        </div>
+        ${p.illness?`<div class="desc">🩺 ${escapeHtml(p.illness)}</div>`:''}
+        ${parent?`<div class="meta small">บิดา/มารดา: ${escapeHtml(parent.name)}</div>`:''}
+        ${spouse?`<div class="meta small">คู่สมรส: ${escapeHtml(spouse.name)}</div>`:''}
+        ${p.note?`<div class="desc">${escapeHtml(p.note)}</div>`:''}
+        <div class="actions">
+          <button class="btn btn-sm" onclick="openPersonModalById('${p.id}')">✏️</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function roleLabel(r){
+  return {head:'หัวหน้าครอบครัว',caregiver:'ผู้ดูแลหลัก',decision:'ผู้ตัดสินใจสุขภาพ',patient:'ผู้ป่วยหลัก'}[r]||r;
+}
+
+function openPersonModal(p){
+  const c = currentCommunity();
+  document.getElementById('personModalTitle').textContent = p?'แก้ไขบุคคล':'เพิ่มบุคคล';
+  document.getElementById('pId').value = p?.id||'';
+  document.getElementById('pName').value = p?.name||'';
+  document.getElementById('pGender').value = p?.gender||'male';
+  document.getElementById('pAge').value = p?.age||'';
+  document.getElementById('pStatus').value = p?.status||'alive';
+  document.getElementById('pRole').value = p?.role||'';
+  document.getElementById('pIllness').value = p?.illness||'';
+  document.getElementById('pNote').value = p?.note||'';
+  document.getElementById('pDeleteBtn').style.display = p?'inline-flex':'none';
+
+  const parentSel = document.getElementById('pParent');
+  const spouseSel = document.getElementById('pSpouse');
+  parentSel.innerHTML = '<option value="">— ไม่มี —</option>';
+  spouseSel.innerHTML = '<option value="">— ไม่มี —</option>';
+  c.persons.forEach(x=>{
+    if(p && x.id===p.id) return;
+    parentSel.innerHTML += `<option value="${x.id}">${escapeHtml(x.name)}</option>`;
+    spouseSel.innerHTML += `<option value="${x.id}">${escapeHtml(x.name)}</option>`;
+  });
+  parentSel.value = p?.parentId||'';
+  spouseSel.value = p?.spouseId||'';
+  openModal('personModal');
+}
+
+function openPersonModalById(id){
+  const p = currentCommunity().persons.find(x=>x.id===id);
+  if(p) openPersonModal(p);
+}
+
+function savePerson(){
+  const c = currentCommunity();
+  const name = document.getElementById('pName').value.trim();
+  if(!name){ alert('กรุณากรอกชื่อ'); return; }
+  const id = document.getElementById('pId').value;
+  const data = {
+    id: id||uid(), name,
+    gender: document.getElementById('pGender').value,
+    age: document.getElementById('pAge').value,
+    status: document.getElementById('pStatus').value,
+    role: document.getElementById('pRole').value,
+    parentId: document.getElementById('pParent').value||null,
+    spouseId: document.getElementById('pSpouse').value||null,
+    illness: document.getElementById('pIllness').value.trim(),
+    note: document.getElementById('pNote').value.trim()
+  };
+  if(id){
+    const i = c.persons.findIndex(x=>x.id===id);
+    c.persons[i] = data;
+  }else{
+    c.persons.push(data);
+  }
+  // Mirror spouse relationship
+  if(data.spouseId){
+    const sp = c.persons.find(x=>x.id===data.spouseId);
+    if(sp) sp.spouseId = data.id;
+  }
+  saveState();
+  closeModal('personModal');
+  renderGenogram();
+  toast('บันทึกบุคคลแล้ว');
+}
+
+function deletePerson(){
+  const c = currentCommunity();
+  const id = document.getElementById('pId').value;
+  if(confirm('ลบบุคคลนี้?')){
+    c.persons = c.persons.filter(p=>p.id!==id);
+    c.persons.forEach(p=>{
+      if(p.parentId===id) p.parentId=null;
+      if(p.spouseId===id) p.spouseId=null;
+    });
+    saveState();
+    closeModal('personModal');
+    renderGenogram();
+  }
+}
+
+function clearGenogram(){
+  if(confirm('ล้างผังเครือญาติทั้งหมด?')){
+    currentCommunity().persons = [];
+    saveState(); renderGenogram();
+  }
+}
+
+/* ============ 3) Organizations ============ */
+function filterOrg(f, e){
+  orgFilter = f;
+  document.querySelectorAll('#orgView .nav-pill').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  renderOrgs();
+}
+
+function renderOrgs(){
+  const c = currentCommunity();
+  const el = document.getElementById('orgList');
+  let items = c.orgs;
+  if(orgFilter!=='all') items = items.filter(o=>o.type===orgFilter);
+  if(!items.length){
+    el.innerHTML = '<div class="empty-state"><div class="icon">🏛️</div>ยังไม่มีองค์กรในหมวดนี้</div>';
+    return;
+  }
+  el.innerHTML = items.map(o=>`
+    <div class="item-card">
+      <h4>${escapeHtml(o.name)} <span class="badge">${o.type==='formal'?'ทางการ':'ไม่ทางการ'}</span></h4>
+      <div class="meta">
+        ${o.leader?'👤 '+escapeHtml(o.leader):''}
+        ${o.contact?' · 📞 '+escapeHtml(o.contact):''}
+        ${o.members?' · 👥 '+o.members+' คน':''}
+      </div>
+      ${o.role?`<div class="desc">${escapeHtml(o.role)}</div>`:''}
+      ${o.impact?`<div class="meta"><span class="pill ${o.impact==='high'?'pill-success':o.impact==='medium'?'pill-warning':''}">ผลต่อสุขภาพ: ${impactLabel(o.impact)}</span></div>`:''}
+      <div class="actions">
+        <button class="btn btn-sm" onclick="openOrgModalById('${o.id}')">✏️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function impactLabel(i){return{high:'สูง',medium:'ปานกลาง',low:'ต่ำ'}[i]||i;}
+
+function openOrgModal(o){
+  document.getElementById('orgModalTitle').textContent = o?'แก้ไของค์กร':'เพิ่มองค์กร/กลุ่ม';
+  document.getElementById('oId').value = o?.id||'';
+  document.getElementById('oName').value = o?.name||'';
+  document.getElementById('oType').value = o?.type||'formal';
+  document.getElementById('oLeader').value = o?.leader||'';
+  document.getElementById('oContact').value = o?.contact||'';
+  document.getElementById('oMembers').value = o?.members||'';
+  document.getElementById('oRole').value = o?.role||'';
+  document.getElementById('oImpact').value = o?.impact||'medium';
+  document.getElementById('oDeleteBtn').style.display = o?'inline-flex':'none';
+  openModal('orgModal');
+}
+
+function openOrgModalById(id){
+  const o = currentCommunity().orgs.find(x=>x.id===id);
+  if(o) openOrgModal(o);
+}
+
+function saveOrg(){
+  const c = currentCommunity();
+  const name = document.getElementById('oName').value.trim();
+  if(!name){ alert('กรุณากรอกชื่อ'); return; }
+  const id = document.getElementById('oId').value;
+  const data = {
+    id: id||uid(), name,
+    type: document.getElementById('oType').value,
+    leader: document.getElementById('oLeader').value.trim(),
+    contact: document.getElementById('oContact').value.trim(),
+    members: document.getElementById('oMembers').value,
+    role: document.getElementById('oRole').value.trim(),
+    impact: document.getElementById('oImpact').value
+  };
+  if(id){
+    const i = c.orgs.findIndex(x=>x.id===id);
+    c.orgs[i] = data;
+  }else{
+    c.orgs.push(data);
+  }
+  saveState();
+  closeModal('orgModal');
+  renderOrgs();
+  toast('บันทึกแล้ว');
+}
+
+function deleteOrg(){
+  const c = currentCommunity();
+  const id = document.getElementById('oId').value;
+  if(confirm('ลบองค์กรนี้?')){
+    c.orgs = c.orgs.filter(x=>x.id!==id);
+    saveState();
+    closeModal('orgModal');
+    renderOrgs();
+  }
+}
+
+/* ============ 4) Health system ============ */
+function filterHealth(f, e){
+  healthFilter = f;
+  document.querySelectorAll('#healthView .nav-pill').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  renderHealth();
+}
+
+function renderHealth(){
+  const c = currentCommunity();
+  const el = document.getElementById('healthList');
+  let items = [...c.healthProviders].sort((a,b)=>(a.order||99)-(b.order||99));
+  if(healthFilter!=='all') items = items.filter(h=>h.category===healthFilter);
+  if(!items.length){
+    el.innerHTML = '<div class="empty-state"><div class="icon">🩺</div>ยังไม่มีข้อมูล</div>';
+    return;
+  }
+  el.innerHTML = items.map(h=>`
+    <div class="item-card">
+      <h4>${escapeHtml(h.name)} <span class="badge">${categoryLabel(h.category)}</span></h4>
+      <div class="meta">
+        ${h.order?'<span class="pill pill-success">ลำดับ #'+h.order+'</span>':''}
+        ${h.distance?' · 📍 '+h.distance+' กม.':''}
+        ${h.frequency?' · '+escapeHtml(h.frequency):''}
+      </div>
+      ${h.problems?`<div class="desc">🩹 ${escapeHtml(h.problems)}</div>`:''}
+      ${h.belief?`<div class="desc"><em>"${escapeHtml(h.belief)}"</em></div>`:''}
+      <div class="actions">
+        <button class="btn btn-sm" onclick="openHealthModalById('${h.id}')">✏️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function categoryLabel(c){
+  return {modern:'แพทย์สมัยใหม่',traditional:'แพทย์พื้นบ้าน',self:'ดูแลตนเอง'}[c]||c;
+}
+
+function openHealthModal(h){
+  document.getElementById('healthModalTitle').textContent = h?'แก้ไข':'เพิ่มผู้ให้บริการสุขภาพ';
+  document.getElementById('hId').value = h?.id||'';
+  document.getElementById('hName').value = h?.name||'';
+  document.getElementById('hCategory').value = h?.category||'modern';
+  document.getElementById('hOrder').value = h?.order||1;
+  document.getElementById('hDistance').value = h?.distance||'';
+  document.getElementById('hFreq').value = h?.frequency||'บ่อย';
+  document.getElementById('hProblems').value = h?.problems||'';
+  document.getElementById('hBelief').value = h?.belief||'';
+  document.getElementById('hDeleteBtn').style.display = h?'inline-flex':'none';
+  openModal('healthModal');
+}
+
+function openHealthModalById(id){
+  const h = currentCommunity().healthProviders.find(x=>x.id===id);
+  if(h) openHealthModal(h);
+}
+
+function saveHealth(){
+  const c = currentCommunity();
+  const name = document.getElementById('hName').value.trim();
+  if(!name){ alert('กรุณากรอกชื่อ'); return; }
+  const id = document.getElementById('hId').value;
+  const data = {
+    id: id||uid(), name,
+    category: document.getElementById('hCategory').value,
+    order: parseInt(document.getElementById('hOrder').value)||1,
+    distance: document.getElementById('hDistance').value,
+    frequency: document.getElementById('hFreq').value,
+    problems: document.getElementById('hProblems').value.trim(),
+    belief: document.getElementById('hBelief').value.trim()
+  };
+  if(id){
+    const i = c.healthProviders.findIndex(x=>x.id===id);
+    c.healthProviders[i] = data;
+  }else{
+    c.healthProviders.push(data);
+  }
+  saveState();
+  closeModal('healthModal');
+  renderHealth();
+  toast('บันทึกแล้ว');
+}
+
+function deleteHealth(){
+  const c = currentCommunity();
+  const id = document.getElementById('hId').value;
+  if(confirm('ลบรายการนี้?')){
+    c.healthProviders = c.healthProviders.filter(x=>x.id!==id);
+    saveState();
+    closeModal('healthModal');
+    renderHealth();
+  }
+}
+
+/* ============ 5) Calendar ============ */
+function renderCalendar(){
+  const c = currentCommunity();
+  if(!c.calendarEvents) c.calendarEvents = {};
+  const el = document.getElementById('calendarGrid');
+  el.innerHTML = THAI_MONTHS.map((m,i)=>{
+    const events = c.calendarEvents[i]||[];
+    return `
+      <div class="month-card">
+        <h4>${m} <button class="btn btn-sm btn-primary btn-icon" onclick="openCalendarModal(${i})">+</button></h4>
+        <div class="events">
+          ${events.length ? events.map((e,idx)=>`
+            <span class="event-tag" title="${escapeHtml(e.desc||'')}">
+              ${eventIcon(e.type)} ${escapeHtml(e.title)}
+              <span class="x" onclick="removeCalendarEvent(${i},${idx})">×</span>
+            </span>
+          `).join('') : '<span class="small">— ไม่มีกิจกรรม —</span>'}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function eventIcon(t){
+  return {harvest:'🌾',festival:'🎉',migration:'🚌',health:'🏥',weather:'☔',other:'📌'}[t]||'📌';
+}
+
+function openCalendarModal(month){
+  document.getElementById('calMonth').value = month;
+  document.getElementById('calMonthLabel').textContent = THAI_MONTHS[month];
+  document.getElementById('calTitle').value='';
+  document.getElementById('calType').value='festival';
+  document.getElementById('calDesc').value='';
+  openModal('calendarModal');
+}
+
+function saveCalendarEvent(){
+  const c = currentCommunity();
+  const m = parseInt(document.getElementById('calMonth').value);
+  const title = document.getElementById('calTitle').value.trim();
+  if(!title){ alert('กรุณากรอกชื่อกิจกรรม'); return; }
+  if(!c.calendarEvents) c.calendarEvents={};
+  if(!c.calendarEvents[m]) c.calendarEvents[m]=[];
+  c.calendarEvents[m].push({
+    title,
+    type: document.getElementById('calType').value,
+    desc: document.getElementById('calDesc').value.trim()
+  });
+  saveState();
+  closeModal('calendarModal');
+  renderCalendar();
+  toast('เพิ่มกิจกรรมแล้ว');
+}
+
+function removeCalendarEvent(month, idx){
+  const c = currentCommunity();
+  c.calendarEvents[month].splice(idx,1);
+  saveState();
+  renderCalendar();
+}
+
+/* ============ 6) History ============ */
+function renderHistory(){
+  const c = currentCommunity();
+  const el = document.getElementById('historyTimeline');
+  const items = [...c.historyEvents].sort((a,b)=>(a.year||0)-(b.year||0));
+  if(!items.length){
+    el.innerHTML = '<div class="empty-state"><div class="icon">📜</div>ยังไม่มีเหตุการณ์</div>';
+    return;
+  }
+  el.innerHTML = items.map(h=>`
+    <div class="timeline-item">
+      <div class="timeline-year">${h.year||'?'} ${historyTypeIcon(h.type)}</div>
+      <div class="timeline-title">${escapeHtml(h.title)}</div>
+      <div class="timeline-desc">${escapeHtml(h.desc||'')}</div>
+      ${h.source?`<div class="small">📝 ${escapeHtml(h.source)}</div>`:''}
+      <div class="actions" style="position:absolute;top:8px;right:8px">
+        <button class="btn btn-sm" onclick="openHistoryModalById('${h.id}')">✏️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function historyTypeIcon(t){
+  return {origin:'🌱',disaster:'⚠️',development:'🚧',culture:'🎭',health:'🏥',other:'📌'}[t]||'';
+}
+
+function openHistoryModal(h){
+  document.getElementById('historyModalTitle').textContent = h?'แก้ไขเหตุการณ์':'เพิ่มเหตุการณ์';
+  document.getElementById('hsId').value = h?.id||'';
+  document.getElementById('hsYear').value = h?.year||'';
+  document.getElementById('hsTitle').value = h?.title||'';
+  document.getElementById('hsType').value = h?.type||'origin';
+  document.getElementById('hsDesc').value = h?.desc||'';
+  document.getElementById('hsSource').value = h?.source||'';
+  document.getElementById('hsDeleteBtn').style.display = h?'inline-flex':'none';
+  openModal('historyModal');
+}
+
+function openHistoryModalById(id){
+  const h = currentCommunity().historyEvents.find(x=>x.id===id);
+  if(h) openHistoryModal(h);
+}
+
+function saveHistory(){
+  const c = currentCommunity();
+  const title = document.getElementById('hsTitle').value.trim();
+  const year = document.getElementById('hsYear').value;
+  if(!title || !year){ alert('กรุณากรอกปีและหัวข้อ'); return; }
+  const id = document.getElementById('hsId').value;
+  const data = {
+    id:id||uid(), title,
+    year: parseInt(year),
+    type: document.getElementById('hsType').value,
+    desc: document.getElementById('hsDesc').value.trim(),
+    source: document.getElementById('hsSource').value.trim()
+  };
+  if(id){
+    const i = c.historyEvents.findIndex(x=>x.id===id);
+    c.historyEvents[i] = data;
+  }else{
+    c.historyEvents.push(data);
+  }
+  saveState();
+  closeModal('historyModal');
+  renderHistory();
+  toast('บันทึกแล้ว');
+}
+
+function deleteHistory(){
+  const c = currentCommunity();
+  const id = document.getElementById('hsId').value;
+  if(confirm('ลบเหตุการณ์นี้?')){
+    c.historyEvents = c.historyEvents.filter(x=>x.id!==id);
+    saveState();
+    closeModal('historyModal');
+    renderHistory();
+  }
+}
+
+/* ============ 7) Life history ============ */
+function renderLife(){
+  const c = currentCommunity();
+  const el = document.getElementById('lifeList');
+  if(!c.lifeHistories.length){
+    el.innerHTML = '<div class="empty-state"><div class="icon">🎙️</div>ยังไม่มีประวัติชีวิต — เพิ่มเรื่องเล่าจากคนสำคัญในชุมชน</div>';
+    return;
+  }
+  el.innerHTML = c.lifeHistories.map(l=>`
+    <div class="item-card" style="grid-column:span 1">
+      <h4>🎙️ ${escapeHtml(l.name)}</h4>
+      <div class="meta">
+        ${l.age?l.age+' ปี · ':''}
+        ${genderLabel(l.gender)}
+        ${l.role?' · '+escapeHtml(l.role):''}
+      </div>
+      ${l.date?`<div class="meta small">📅 สัมภาษณ์: ${l.date} ${l.interviewer?' โดย '+escapeHtml(l.interviewer):''}</div>`:''}
+      ${l.background?`<div class="desc"><strong>ภูมิหลัง:</strong> ${escapeHtml(l.background)}</div>`:''}
+      ${l.events?`<div class="desc"><strong>เหตุการณ์สำคัญ:</strong> ${escapeHtml(l.events)}</div>`:''}
+      ${l.philosophy?`<div class="desc"><strong>วิธีคิด:</strong> ${escapeHtml(l.philosophy)}</div>`:''}
+      ${l.healthView?`<div class="desc"><strong>มุมมองสุขภาพ:</strong> ${escapeHtml(l.healthView)}</div>`:''}
+      ${l.quote?`<div class="desc" style="background:#fef3c7;padding:8px;border-radius:6px;border-left:3px solid var(--accent);margin-top:8px"><em>"${escapeHtml(l.quote)}"</em></div>`:''}
+      <div class="actions">
+        <button class="btn btn-sm" onclick="openLifeModalById('${l.id}')">✏️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function genderLabel(g){return{male:'ชาย',female:'หญิง',other:'อื่นๆ'}[g]||'';}
+
+function openLifeModal(l){
+  document.getElementById('lifeModalTitle').textContent = l?'แก้ไขประวัติชีวิต':'เพิ่มประวัติชีวิต';
+  document.getElementById('lfId').value = l?.id||'';
+  document.getElementById('lfName').value = l?.name||'';
+  document.getElementById('lfAge').value = l?.age||'';
+  document.getElementById('lfGender').value = l?.gender||'male';
+  document.getElementById('lfRole').value = l?.role||'';
+  document.getElementById('lfDate').value = l?.date||'';
+  document.getElementById('lfInterviewer').value = l?.interviewer||'';
+  document.getElementById('lfBackground').value = l?.background||'';
+  document.getElementById('lfEvents').value = l?.events||'';
+  document.getElementById('lfPhilosophy').value = l?.philosophy||'';
+  document.getElementById('lfHealthView').value = l?.healthView||'';
+  document.getElementById('lfQuote').value = l?.quote||'';
+  document.getElementById('lfDeleteBtn').style.display = l?'inline-flex':'none';
+  openModal('lifeModal');
+}
+
+function openLifeModalById(id){
+  const l = currentCommunity().lifeHistories.find(x=>x.id===id);
+  if(l) openLifeModal(l);
+}
+
+function saveLife(){
+  const c = currentCommunity();
+  const name = document.getElementById('lfName').value.trim();
+  if(!name){ alert('กรุณากรอกชื่อ'); return; }
+  const id = document.getElementById('lfId').value;
+  const data = {
+    id:id||uid(), name,
+    age: document.getElementById('lfAge').value,
+    gender: document.getElementById('lfGender').value,
+    role: document.getElementById('lfRole').value.trim(),
+    date: document.getElementById('lfDate').value,
+    interviewer: document.getElementById('lfInterviewer').value.trim(),
+    background: document.getElementById('lfBackground').value.trim(),
+    events: document.getElementById('lfEvents').value.trim(),
+    philosophy: document.getElementById('lfPhilosophy').value.trim(),
+    healthView: document.getElementById('lfHealthView').value.trim(),
+    quote: document.getElementById('lfQuote').value.trim()
+  };
+  if(id){
+    const i = c.lifeHistories.findIndex(x=>x.id===id);
+    c.lifeHistories[i] = data;
+  }else{
+    c.lifeHistories.push(data);
+  }
+  saveState();
+  closeModal('lifeModal');
+  renderLife();
+  toast('บันทึกแล้ว');
+}
+
+function deleteLife(){
+  const c = currentCommunity();
+  const id = document.getElementById('lfId').value;
+  if(confirm('ลบประวัติชีวิตนี้?')){
+    c.lifeHistories = c.lifeHistories.filter(x=>x.id!==id);
+    saveState();
+    closeModal('lifeModal');
+    renderLife();
+  }
+}
+
+/* ============ Reset ============ */
+function resetToTambon(){
+  if(confirm('⚠️ ลบข้อมูลทั้งหมดและโหลด 12 หมู่บ้านของตำบลคำใหญ่ใหม่?\n(แนะนำให้ "ส่งออก" ข้อมูลปัจจุบันก่อนถ้าต้องการสำรอง)')){
+    localStorage.removeItem(STORAGE_KEY);
+    state = loadState();
+    currentCommunityId = state.communities[0]?.id;
+    saveState();
+    renderAll();
+    toast('โหลด 12 หมู่บ้านตำบลคำใหญ่เรียบร้อยแล้ว');
+  }
+}
+
+/* ============ Import / Export ============ */
+function exportData(){
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'community-file-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('ส่งออกข้อมูลแล้ว');
+}
+
+function importData(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const r = new FileReader();
+  r.onload = (e)=>{
+    try{
+      const imported = JSON.parse(e.target.result);
+      if(!imported.communities) throw new Error('Invalid format');
+      if(confirm('นำเข้าข้อมูลจะแทนที่ข้อมูลปัจจุบัน — ต้องการดำเนินการต่อ?')){
+        state = imported;
+        currentCommunityId = state.communities[0]?.id;
+        saveState();
+        renderAll();
+        toast('นำเข้าข้อมูลสำเร็จ');
+      }
+    }catch(err){
+      alert('ไม่สามารถนำเข้าได้: '+err.message);
+    }
+  };
+  r.readAsText(file);
+  evt.target.value='';
+}
+
+/* ============ Modal helpers ============ */
+function openModal(id){ document.getElementById(id).classList.add('active'); }
+function closeModal(id){ document.getElementById(id).classList.remove('active'); }
+document.querySelectorAll('.modal-bg').forEach(m=>{
+  m.addEventListener('click', (e)=>{ if(e.target===m) m.classList.remove('active'); });
+});
+
+/* ============ Helpers ============ */
+function escapeHtml(s){
+  if(s===null||s===undefined) return '';
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderAll(){
+  renderCommunitySelector();
+  renderDashboard();
+  setSyncStatus('idle');
+  // Show overview first if multiple villages exist (e.g., tambon-level seed)
+  if(state.communities.length>1){
+    showOverview();
+  } else {
+    showHome();
+  }
+}
+
+// init
+window.addEventListener('DOMContentLoaded', renderAll);
+</script>
+</body>
+</html>
